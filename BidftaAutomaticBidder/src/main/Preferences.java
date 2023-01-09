@@ -6,7 +6,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,12 +65,11 @@ public class Preferences {
 	 * Take a line from the prefs.txt and sets the corresponding preference
 	 */
 	public static void setPreference(String line) {
-		line = line.toLowerCase(Locale.ENGLISH);
 		if (line.startsWith(Constants.USERNAME)) {
-			Preferences.userName = stripLine(line, Constants.AUTO_BID);
+			Preferences.userName = stripLine(line, Constants.USERNAME);
 		}
 		else if (line.startsWith(Constants.PASSWORD)) {
-			Preferences.password = stripLine(line, Constants.AUTO_BID);
+			Preferences.password = stripLine(line, Constants.PASSWORD);
 		}
 		else if (line.startsWith(Constants.MIN_MSRP)) {
 			line = stripLine(line, Constants.MIN_MSRP);

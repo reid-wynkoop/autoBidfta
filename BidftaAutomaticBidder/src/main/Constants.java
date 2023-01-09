@@ -12,15 +12,14 @@ public class Constants {
 
 	public static final String BIDFTA_URL = "https://www.bidfta.com";
 
-	// Preferences - need to be all lower case
-	public static final String USERNAME = "username:";
-	public static final String PASSWORD = "password:";
-	public static final String MIN_MSRP = "minmsrp:";
-	public static final String MAX_BID = "maxbid:";
-	public static final String BID_LOCATIONS = "bidlocations:";
-	public static final String ITEM_STATUS = "itemstatus:";
+	public static final String USERNAME = "Username:";
+	public static final String PASSWORD = "Password:";
+	public static final String MIN_MSRP = "minMSRP:";
+	public static final String MAX_BID = "maxBID:";
+	public static final String BID_LOCATIONS = "bidLocations:";
+	public static final String ITEM_STATUS = "itemStatus:";
 	public static final String EXCLUDE ="exclude:";
-	public static final String AUTO_BID ="autobid:";
+	public static final String AUTO_BID ="autoBid:";
 			
 
 	// Website keywords
