@@ -1,0 +1,28 @@
+#Preference File
+#This is where you will add information for the automation of BIDFTA bidding, 
+#such as Username/Password, bid location, min MSRP to bid, etc.
+Username: reid.wynkoop8@gmail.com
+Password: Thispassword4
+minMSRP: 1000
+#maxBid - This can be a percent (of minMSRP) or $ amount.
+#Use a % or $ sign with value
+maxBid: 20%
+#bidLocations - comma separated list of bid site locations. City or specific location
+bidlocations: Dayton
+#Appears New, Open Box, or Brand New
+itemStatus: Brand New, Appears New
+#Words in the bid title you would like to EXCLUDE. ex: incomplete, damaged, TV, sofa, etc
+exclude: Nightstand
+#Y means the application will enter bids automatically, N means a txt file will be created with 
+#the links to bids that fits the criteria
+autoBid:N
+
+#Example preferences
+#Username: reid
+#Password: reidspassword
+#minMSRP: 1000
+#maxBid: 20%
+#bidlocations: edwin Moses, Webster
+#itemStatus: Appears New
+#exclude: incomplete
+#autoBid:N
