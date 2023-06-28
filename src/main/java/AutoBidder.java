@@ -15,7 +15,7 @@ public class AutoBidder {
 
 		if (!Preferences.verifyPreferences()) {
 			log.severe("There were errors with the given preferences. Cannot continue with AutoBidder");
-			System.exit(0);
+			System.exit(150);
 		}
 		
 		BidftaWebDriver driver = new BidftaWebDriver();
