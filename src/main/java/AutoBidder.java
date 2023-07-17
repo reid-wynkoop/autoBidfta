@@ -1,28 +1,33 @@
+import lombok.Getter;
 import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
 
 /**
  * @author speed
- *
  */
-@Log
+@Slf4j
 public class AutoBidder {
-	
 
-	public static void main(String[] args) {
+    @Getter
+    private static List<String> auctionsAnalyzed;
 
-		// Read in the prefs.txt and initialize the Preferences
-		Preferences.init();
+    public static void main(String[] args) {
 
-		if (!Preferences.verifyPreferences()) {
-			log.severe("There were errors with the given preferences. Cannot continue with AutoBidder");
-			System.exit(150);
-		}
-		
-		BidftaWebDriver driver = new BidftaWebDriver();
-		driver.drive();
-		
-		
+        auctionsAnalyzed = Utils.readInAuctions();
+        // Read in the prefs.txt and initialize the Preferences
+        Preferences.init();
 
-	}
+        if (!Preferences.verifyPreferences()) {
+            log.error("There were errors with the given preferences. Cannot continue with AutoBidder");
+            System.exit(150);
+        }
+
+        BidftaWebDriver driver = new BidftaWebDriver();
+        driver.drive();
+
+
+    }
 
 }

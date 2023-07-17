@@ -23,5 +23,7 @@ public class Constants {
 
     public static final String BID_ZIP_CODE = "bidZipCode:";
 
-    // Website keywords
+    // Xpaths
+    public static final String AUCTION_BID_XPATH = "/html/body/div[1]/div/div[4]/main/div/div[1]/aside/div/div/div[2]/a";
+
 }

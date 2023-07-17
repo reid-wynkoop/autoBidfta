@@ -1,20 +1,23 @@
+import lombok.Getter;
 import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 
 /**
  * @author speed
  */
-@Log
+@Slf4j
 public class BidftaWebDriver {
 
+    @Getter
     private final FirefoxDriver driver;
 
     /**
@@ -36,40 +39,54 @@ public class BidftaWebDriver {
         //Navigate the Auctions
         navigateToAuctions();
 
-        //Auctions are
+        //Auctions
         openAuctions();
 
     }
 
     private void openAuctions() {
-        WebElement auctions =
+        WebElement auctionDivWE =
                 this.driver.findElement(
                         By.xpath("/html/body/div[1]/div[4]/main/div/div/div/div[2]"));
 
-        List<WebElement> auction = auctions.findElements(By.xpath("div/a"));
-        waitBid(3);
+        List<WebElement> auctionsList = auctionDivWE.findElements(By.xpath("div/a"));
+        Utils.waitBid(3, this.driver);
+
+        Queue<Auction> auctionsQ = Utils.createQueueOfAuctions(auctionsList);
+
+        while (!auctionsQ.isEmpty()) {
+            Utils.waitBid(2, this.driver);
+            log.info("" + auctionsQ.size());
+
+
+            //Gets top of queue, but does not remove
+            Auction a = auctionsQ.peek();
+            a.openAuction(this.driver);
+            auctionsQ.remove();
+
+        }
 
 
         //open in new tab
-        this.driver.executeScript("window.open('" + auction.get(0).getAttribute("href") + "');");
-
-        Set<String> tabs = this.driver.getWindowHandles();
-        log.info("" + auction.get(0).getAttribute("href"));
-        for (String tab : tabs) {
-            if (!tab.equals(this.driver.getWindowHandle())) {
-                this.driver.switchTo().window(tab);
-            }
-        }
-        //Need to wait bc the url changes
-        waitBid(3);
-        this.driver.get(Utils.createFilteredAuctionUrl(this.driver.getCurrentUrl()));
+//        this.driver.executeScript("window.open('" + auctionsList.get(0).getAttribute("href") + "');");
+//
+//        Set<String> tabs = this.driver.getWindowHandles();
+//        log.info("" + auctionsList.get(0).getAttribute("href"));
+//        for (String tab : tabs) {
+//            if (!tab.equals(this.driver.getWindowHandle())) {
+//                this.driver.switchTo().window(tab);
+//            }
+//        }
+//        //Need to wait bc the url changes
+//        Utils.waitBid(3);
+//        this.driver.get(Utils.createFilteredAuctionUrl(this.driver.getCurrentUrl()));
     }
 
     /**
      * Navigates to auctions with the given Zip Code and Distance parameters
      */
     private void navigateToAuctions() {
-        waitBid(4);
+        Utils.waitBid(4, this.driver);
 
         // "https://www.bidfta.com/location?miles=10&zipCode=45420"
         String url = "https://www.bidfta.com/location?miles=" + Preferences.getBidZipDistance() + "&zipCode=" + Preferences.getBidZipCode();
@@ -86,7 +103,7 @@ public class BidftaWebDriver {
     private void login() {
         // click on the Login button
         int loginAttempts = 0;
-        waitBid(2);
+        Utils.waitBid(2, this.driver);
 
         //Sometimes there is a Banner hiding the Login Btn. Close it if exists.
         WebElement element = driver.findElement(By.xpath("/html/body/div[2]/div/div/div/div[1]/button"));
@@ -98,14 +115,14 @@ public class BidftaWebDriver {
         else {
             log.info("Banner button did not exist");
         }
-        waitBid(2);
+        Utils.waitBid(2, this.driver);
         element = driver.findElement(By.xpath("/html/body/div[1]/div[1]/div[1]/div[2]/div/button"));
         if (element == null) {
-            log.warning("Did not find button");
+            log.warn("Did not find button");
             return;
         }
         element.click();
-        waitBid(2);
+        Utils.waitBid(2, this.driver);
         while (loginAttempts < 4) {
             log.info("Starting to login");
             //Username
@@ -115,18 +132,18 @@ public class BidftaWebDriver {
             element.sendKeys(Preferences.getUserName());
 
             //Password
-            waitBid(2);
+            Utils.waitBid(2, this.driver);
             element = driver.findElement(By.id("password"));
             element.clear();
             log.info(Preferences.getPassword());
             element.sendKeys(Preferences.getPassword());
 
             //Enter btn
-            waitBid(3);
+            Utils.waitBid(3, this.driver);
             element.sendKeys(Keys.ENTER);
             log.info(element.getTagName());
             element.click();
-            waitBid(5);
+            Utils.waitBid(5, this.driver);
             log.info(this.driver.getCurrentUrl());
             //Login goes to dashboard
             if (Constants.BIDFTA_DASHBOARD_URL.equals(this.driver.getCurrentUrl())) {
@@ -141,21 +158,5 @@ public class BidftaWebDriver {
 
     }
 
-    /**
-     * Helper method that tells the driver to wait for a desired amount of seconds
-     *
-     * @param seconds - Amount of seconds you want to wait
-     */
-    private void waitBid(double seconds) {
-        long timeMillis = (long) (seconds * 1000);
 
-        synchronized (this.driver) {
-            try {
-                driver.wait(timeMillis);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                e.printStackTrace();
-            }
-        }
-    }
 }

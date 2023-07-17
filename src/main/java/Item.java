@@ -5,7 +5,6 @@ import lombok.Data;
  * Representation of an Auction Item.
  */
 @Data
-@Builder
 public class Item {
 
     private String title;

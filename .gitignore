@@ -24,4 +24,4 @@
 hs_err_pid*
 replay_pid*
 
-!/prefs.txt
+!/src/main/resources/prefs.txt

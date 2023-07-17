@@ -1,5 +1,6 @@
 import lombok.Getter;
 import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -15,7 +16,7 @@ import java.util.List;
  *
  * @author speed
  */
-@Log
+@Slf4j
 public class Preferences {
 
     private Preferences() {
@@ -45,23 +46,22 @@ public class Preferences {
     @Getter
     private static String bidZipDistance;
 
+
     // Reads in the prefs.txt file and initialized the preferences
     public static void init() {
 
-        File f = new File("prefs.txt");
+        File f = new File("src/main/resources/prefs.txt");
         if (f.exists()) {
-
-
             try (BufferedReader reader = new BufferedReader(new FileReader(f))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    log.info(line);
+//                    log.info(line);
                     // Lines starting with '#' are comments.
                     if (!line.isBlank() && !line.startsWith("#")) {
                         Preferences.setPreference(line);
                     }
                 }
-                Preferences.printOutPrefs();
+//                Preferences.printOutPrefs();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -103,7 +103,7 @@ public class Preferences {
                     Preferences.maxBid = Preferences.minMSRP * (percent / 100);
                 }
                 else {
-                    log.severe("MinMSRP was null when assigning MaxBid. Move MinMSRP before MaxBid if prefs.txt");
+                    log.error("MinMSRP was null when assigning MaxBid. Move MinMSRP before MaxBid if prefs.txt");
                 }
             }
         }
@@ -135,12 +135,11 @@ public class Preferences {
         }
         StringBuilder url = new StringBuilder("?itemConditionIds=");
         boolean first = true;
-        //?itemConditionIds=1
-        //%2C3
+        //?itemConditionIds=1%2C3
         for (String status : Preferences.getItemStatus()) {
             log.info(status);
             switch (status.trim()) {
-                case "Open Box":
+                case "Open Box" -> {
                     if (first) {
                         first = false;
                         url.append("1");
@@ -148,8 +147,8 @@ public class Preferences {
                     else {
                         url.append("%2C1");
                     }
-                    break;
-                case "Appears New":
+                }
+                case "Appears New" -> {
                     if (first) {
                         first = false;
                         url.append("3");
@@ -157,8 +156,8 @@ public class Preferences {
                     else {
                         url.append("%2C3");
                     }
-                    break;
-                case "Brand New":
+                }
+                case "Brand New" -> {
                     if (first) {
                         first = false;
                         url.append("5");
@@ -166,7 +165,7 @@ public class Preferences {
                     else {
                         url.append("%2C5");
                     }
-                    break;
+                }
             }
         }
 
@@ -174,27 +173,27 @@ public class Preferences {
     }
 
     /**
-     * @param line
-     * @param preferenceValue
-     * @return
+     * @param line           - Line read in from file
+     * @param preferenceName - Name of the Preference.
+     * @return - Preference Value
      */
-    private static String stripLine(String line, String preferenceValue) {
-        return line.substring(preferenceValue.length()).strip();
+    private static String stripLine(String line, String preferenceName) {
+        return line.substring(preferenceName.length()).strip();
     }
 
     /**
      *
      */
     public static void printOutPrefs() {
-        log.info(String.format("Username is \" %s \" ", Preferences.getUserName()));
-        log.info(String.format("Password is \" %s \" ", Preferences.getPassword()));
-        log.info(String.format("minMSRP is \" %s \" ", Preferences.getMinMSRP()));
-        log.info(String.format("maxBid is \" %s \" ", Preferences.getMaxBid()));
-        log.info(String.format("Zip Code is \" %s \" ", Preferences.getBidZipCode()));
-        log.info(String.format("Zip Code Distance is \" %s \" ", Preferences.getBidZipDistance()));
-        log.info(String.format("Item Status is \" %s \" ", Preferences.getItemStatus()));
-        log.info(String.format("Exclude is \" %s \" ", Preferences.getExcludedWords()));
-        log.info(String.format("AutoBid is \" %s \" ", Preferences.isAutoBid()));
+        log.info(String.format("Username is %s ", Preferences.getUserName()));
+        log.info(String.format("Password is %s  ", Preferences.getPassword()));
+        log.info(String.format("minMSRP is %s  ", Preferences.getMinMSRP()));
+        log.info(String.format("maxBid is  %s  ", Preferences.getMaxBid()));
+        log.info(String.format("Zip Code is  %s ", Preferences.getBidZipCode()));
+        log.info(String.format("Zip Code Distance is  %s  ", Preferences.getBidZipDistance()));
+        log.info(String.format("Item Status is  %s  ", Preferences.getItemStatus()));
+        log.info(String.format("Exclude is  %s  ", Preferences.getExcludedWords()));
+        log.info(String.format("AutoBid is %s  ", Preferences.isAutoBid()));
     }
 
     /**
