@@ -31,8 +31,6 @@ public final class Utils {
             try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    log.info(line);
-
                     if (!line.isBlank()) {
                         retList.add(line);
                     }

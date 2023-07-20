@@ -1,5 +1,4 @@
 import lombok.Getter;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
@@ -49,19 +48,31 @@ public class BidftaWebDriver {
                 this.driver.findElement(
                         By.xpath("/html/body/div[1]/div[4]/main/div/div/div/div[2]"));
 
+        Utils.waitBid(3, this.driver);
         List<WebElement> auctionsList = auctionDivWE.findElements(By.xpath("div/a"));
         Utils.waitBid(3, this.driver);
 
         Queue<Auction> auctionsQ = Utils.createQueueOfAuctions(auctionsList);
 
         while (!auctionsQ.isEmpty()) {
-            Utils.waitBid(2, this.driver);
-            log.info("" + auctionsQ.size());
+            Utils.waitBid(1, this.driver);
+            log.info("Auctions Left to search " + auctionsQ.size());
 
 
             //Gets top of queue, but does not remove
             Auction a = auctionsQ.peek();
             a.openAuction(this.driver);
+
+            if (!Preferences.getPreviousAuctions().contains(a.getAuctionName())) {
+                a.driveAuction();
+            }
+            else {
+                log.warn("Auction skipped: " + a.getAuctionName());
+                this.driver.close();
+            }
+            Set<String> handles = this.driver.getWindowHandles();
+            this.driver.switchTo().window(handles.iterator().next());
+
             auctionsQ.remove();
 
         }
@@ -86,7 +97,7 @@ public class BidftaWebDriver {
      * Navigates to auctions with the given Zip Code and Distance parameters
      */
     private void navigateToAuctions() {
-        Utils.waitBid(4, this.driver);
+        Utils.waitBid(2, this.driver);
 
         // "https://www.bidfta.com/location?miles=10&zipCode=45420"
         String url = "https://www.bidfta.com/location?miles=" + Preferences.getBidZipDistance() + "&zipCode=" + Preferences.getBidZipCode();
@@ -97,53 +108,52 @@ public class BidftaWebDriver {
 
     /**
      * Attempts to log into BidFta.com with given credentials
-     *
-     * @return true if successfully logged in, false otherwise
      */
     private void login() {
         // click on the Login button
         int loginAttempts = 0;
-        Utils.waitBid(2, this.driver);
+        Utils.waitBid(1, this.driver);
 
         //Sometimes there is a Banner hiding the Login Btn. Close it if exists.
-        WebElement element = driver.findElement(By.xpath("/html/body/div[2]/div/div/div/div[1]/button"));
-        if (element != null) {
-            log.info("Clicking banner X button");
-            element.click();
-
-        }
-        else {
-            log.info("Banner button did not exist");
-        }
-        Utils.waitBid(2, this.driver);
+        //TODO - fix banner check
+        WebElement element;
+//        = driver.findElement(By.xpath("/html/body/div[2]/div/div/div/div[1]/button"));
+//        if (element != null) {
+//            log.info("Clicking banner X button");
+//            element.click();
+//
+//        }
+//        else {
+//            log.info("Banner button did not exist");
+//        }
+        Utils.waitBid(1, this.driver);
         element = driver.findElement(By.xpath("/html/body/div[1]/div[1]/div[1]/div[2]/div/button"));
         if (element == null) {
             log.warn("Did not find button");
             return;
         }
         element.click();
-        Utils.waitBid(2, this.driver);
+        Utils.waitBid(1, this.driver);
         while (loginAttempts < 4) {
             log.info("Starting to login");
             //Username
             element = driver.findElement(By.id("username"));
             element.clear();
-            log.info(Preferences.getUserName());
+            log.info("UserName: "+Preferences.getUserName());
             element.sendKeys(Preferences.getUserName());
 
             //Password
-            Utils.waitBid(2, this.driver);
+            Utils.waitBid(1, this.driver);
             element = driver.findElement(By.id("password"));
             element.clear();
-            log.info(Preferences.getPassword());
+            log.info("Password: " + Preferences.getPassword());
             element.sendKeys(Preferences.getPassword());
 
             //Enter btn
-            Utils.waitBid(3, this.driver);
+            Utils.waitBid(1, this.driver);
             element.sendKeys(Keys.ENTER);
-            log.info(element.getTagName());
             element.click();
-            Utils.waitBid(5, this.driver);
+            Utils.waitBid(2, this.driver);
             log.info(this.driver.getCurrentUrl());
             //Login goes to dashboard
             if (Constants.BIDFTA_DASHBOARD_URL.equals(this.driver.getCurrentUrl())) {

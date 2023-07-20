@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -46,6 +47,9 @@ public class Preferences {
     @Getter
     private static String bidZipDistance;
 
+    @Getter
+    private static List<String> previousAuctions;
+
 
     // Reads in the prefs.txt file and initialized the preferences
     public static void init() {
@@ -69,6 +73,20 @@ public class Preferences {
         else {
             log.info("Preferences File does not exist");
         }
+
+        previousAuctions = new ArrayList<>();
+        f = new File("src/main/resources/Auctions.txt");
+        if (f.exists()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(f))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    previousAuctions.add(line);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
 
     }
 
@@ -115,7 +133,9 @@ public class Preferences {
         }
         else if (line.startsWith(Constants.ITEM_STATUS)) {
             line = stripLine(line, Constants.ITEM_STATUS);
-            Preferences.itemStatus = Arrays.asList(line.split(","));
+            Preferences.itemStatus = new ArrayList<>();
+            List<String> tmp =  Arrays.asList(line.split(","));
+            tmp.forEach(c -> Preferences.itemStatus.add(c.strip()));
             Preferences.itemStatusUrlFilter = createItemStatusUrlFilter();
 
         }

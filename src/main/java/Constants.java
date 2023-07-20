@@ -14,7 +14,7 @@ public class Constants {
     public static final String USERNAME = "Username:";
     public static final String PASSWORD = "Password:";
     public static final String MIN_MSRP = "minMSRP:";
-    public static final String MAX_BID = "maxBID:";
+    public static final String MAX_BID = "maxBid:";
     public static final String ITEM_STATUS = "itemStatus:";
     public static final String EXCLUDE = "exclude:";
     public static final String AUTO_BID = "autoBid:";

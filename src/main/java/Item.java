@@ -1,4 +1,3 @@
-import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -8,15 +7,26 @@ import lombok.Data;
 public class Item {
 
     private String title;
-    private String MSRP;
+    private double MSRP;
     private String condition;
     private String description;
     private String lotCode;
     private String additionalInfo;
-    private String currentBid;
+    private double currentBid;
     private String pickupLocation;
+    private String URL;
 
-    public Item() {
-
+    public Item(String title, double msrp, String condition, String description,
+                String additionalInfo, double currentBid, String pickupLocation, String lotCode, String currentUrl) {
+        this.title = title;
+        this.MSRP = msrp;
+        this.condition = condition;
+        this.description = description;
+        this.additionalInfo = additionalInfo;
+        this.currentBid = currentBid;
+        this.pickupLocation = pickupLocation;
+        this.lotCode = lotCode;
+        this.URL = currentUrl;
     }
+
 }
