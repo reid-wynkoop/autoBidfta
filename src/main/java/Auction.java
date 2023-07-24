@@ -1,4 +1,3 @@
-import jdk.jshell.execution.Util;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -21,26 +20,25 @@ public class Auction {
 
     @Getter
     private String location;
+
     @Getter
     private String endDate;
-    @Getter
-    private List<String> pickupDates;
-    @Getter
 
-    private List<Item> items;
+    @Getter
+    private final List<String> pickupDates;
+
+    @Getter
+    private final List<Item> items;
+
     @Getter
     private String auctionName;
 
-    private String href;
+    private final String href;
     private FirefoxDriver driver;
 
 
     private int amtPages;
     private int totalItems;
-
-    public Auction() {
-//        Item i = Item.builder().build();
-    }
 
     /**
      * Used as the initial constructor
@@ -76,8 +74,15 @@ public class Auction {
      */
     private void getMetaData() {
 
-        this.auctionName = this.driver.findElement(By.xpath("/html/body/div[1]/div/div[4]/main/div/div[1]/aside/div/div/div[2]/a")).getText();
+        this.auctionName = this.driver.findElement(By.xpath(
+                "/html/body/div[1]/div/div[4]/main/div/div[1]/aside/div/div/div[2]/a")).getText();
         log.warn("Auction Name:" + this.auctionName);
+        if(this.auctionName.isEmpty()){
+            Utils.waitBid(0.5, this.driver);
+            this.auctionName = this.driver.findElement(By.xpath(
+                    "/html/body/div[1]/div/div[4]/main/div/div[1]/aside/div/div/div[2]/a")).getText();
+            log.warn("Auction Name Try 2:" + this.auctionName);
+        }
         this.endDate = this.driver.findElement(By.xpath("/html/body/div[1]/div/div[4]/main/div/div[1]/aside/div/div/div[4]/div[1]/p")).getText();
 
         this.location = this.driver.findElement(By.xpath("/html/body/div[1]/div/div[4]/main/div/div[1]/aside/div/div/div[3]/p[1]")).getText();
@@ -118,13 +123,13 @@ public class Auction {
                     link = this.driver.findElement(By.xpath(
                             "/html/body/div[1]/div/div[4]/main/div/div[1]/div/div[3]/div[2]/div/div/div/div[" + j + "]/div/div/div[1]/div/div[1]/div[1]/a")).getAttribute("href");
                     this.driver.navigate().to(link);
-                    Utils.waitBid(2, this.driver);
+                    Utils.waitBid(1, this.driver);
                     checkMetaData();
 
                     //Go Back to the auction
                     this.driver.navigate().back();
 
-                    Utils.waitBid(1, this.driver);
+                    Utils.waitBid(.5, this.driver);
                 } catch (Exception e) {
 //                    log.error(e.getMessage());
                 }
@@ -147,7 +152,7 @@ public class Auction {
         //Write all Items to file
         try {
             for (Item i : getItems()) {
-                String appendLine = i.toString() + "\n";
+                String appendLine = i.getURL() + "\n";
                 //Add Auction Name to file
                 Files.write(Paths.get("src/main/resources/Items.txt"),
                         appendLine.getBytes(), StandardOpenOption.APPEND);

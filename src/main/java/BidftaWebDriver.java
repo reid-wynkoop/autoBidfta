@@ -6,6 +6,12 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
@@ -19,6 +25,8 @@ public class BidftaWebDriver {
     @Getter
     private final FirefoxDriver driver;
 
+    private final String dateStr;
+
     /**
      * New Bidfta Driver
      */
@@ -27,6 +35,7 @@ public class BidftaWebDriver {
         FirefoxOptions options = new FirefoxOptions();
         options.addArguments("-private");
         this.driver = new FirefoxDriver(options);
+        dateStr = new SimpleDateFormat("MM/dd/yyyy").format(new Date());
 
     }
 
@@ -41,6 +50,8 @@ public class BidftaWebDriver {
         //Auctions
         openAuctions();
 
+        //Close browser
+        this.driver.quit();
     }
 
     private void openAuctions() {
@@ -48,9 +59,19 @@ public class BidftaWebDriver {
                 this.driver.findElement(
                         By.xpath("/html/body/div[1]/div[4]/main/div/div/div/div[2]"));
 
-        Utils.waitBid(3, this.driver);
+        Utils.waitBid(2, this.driver);
         List<WebElement> auctionsList = auctionDivWE.findElements(By.xpath("div/a"));
-        Utils.waitBid(3, this.driver);
+        Utils.waitBid(2, this.driver);
+
+        //Write all Items to file
+        try {
+                String appendLine = " ----------------- " + dateStr + "-----------------\n";
+                //Add Auction Name to file
+                Files.write(Paths.get("src/main/resources/Items.txt"),
+                        appendLine.getBytes(), StandardOpenOption.APPEND);
+        } catch (IOException e) {
+            log.error("Error while writing Auction name to file");
+        }
 
         Queue<Auction> auctionsQ = Utils.createQueueOfAuctions(auctionsList);
 
@@ -97,7 +118,7 @@ public class BidftaWebDriver {
      * Navigates to auctions with the given Zip Code and Distance parameters
      */
     private void navigateToAuctions() {
-        Utils.waitBid(2, this.driver);
+        Utils.waitBid(1, this.driver);
 
         // "https://www.bidfta.com/location?miles=10&zipCode=45420"
         String url = "https://www.bidfta.com/location?miles=" + Preferences.getBidZipDistance() + "&zipCode=" + Preferences.getBidZipCode();

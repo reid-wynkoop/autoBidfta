@@ -1,6 +1,6 @@
 import lombok.Getter;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -134,14 +134,18 @@ public class Preferences {
         else if (line.startsWith(Constants.ITEM_STATUS)) {
             line = stripLine(line, Constants.ITEM_STATUS);
             Preferences.itemStatus = new ArrayList<>();
-            List<String> tmp =  Arrays.asList(line.split(","));
+            //Have to create a tmp list and strip due to possible having spaces
+            List<String> tmp = Arrays.asList(line.split(","));
             tmp.forEach(c -> Preferences.itemStatus.add(c.strip()));
             Preferences.itemStatusUrlFilter = createItemStatusUrlFilter();
 
         }
         else if (line.startsWith(Constants.EXCLUDE)) {
             line = stripLine(line, Constants.EXCLUDE);
-            Preferences.excludedWords = Arrays.asList(line.split(","));
+            Preferences.excludedWords = new ArrayList<>();
+            //Have to create a tmp list and strip due to possible having spaces
+            List<String> tmp = Arrays.asList(line.split(","));
+            tmp.forEach(c -> Preferences.excludedWords.add(c.strip()));
         }
         else if (line.startsWith(Constants.AUTO_BID)) {
             line = stripLine(line, Constants.AUTO_BID);
@@ -149,7 +153,7 @@ public class Preferences {
         }
     }
 
-    private static String createItemStatusUrlFilter() {
+    private static @NotNull String createItemStatusUrlFilter() {
         if (Preferences.getItemStatus().isEmpty()) {
             return "";
         }

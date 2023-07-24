@@ -15,10 +15,6 @@ public final class Utils {
         throw new IllegalStateException("Utility class");
     }
 
-    public static String createFilteredAuctionUrl(String href) {
-        return href + Preferences.getItemStatusUrlFilter();
-    }
-
     /**
      * Reads in the Auctions.txt file. We don't want to analyze an action multiple times.
      *
@@ -48,7 +44,7 @@ public final class Utils {
 
     /**
      * @param auction
-     * @return
+     * @return - Queue of Auctions
      */
     public static @NotNull Queue<Auction> createQueueOfAuctions(@NotNull List<WebElement> auction) {
         Queue<Auction> auctions = new LinkedList<>();
